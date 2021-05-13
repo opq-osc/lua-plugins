@@ -21,7 +21,7 @@ function ReceiveGroupMsg(CurrentQQ, data)
                 SendToType = 2,
                 SendMsgType = "XmlMsg",
                 Content = string.format(
-                    "<?xml version='1.0' encoding='UTF-8' standalone='yes' ?><msg serviceID='1' templateID='1' action='' brief='&#91;窥屏检测&#93;' sourceMsgId='0' url=\"https://www.baidu.com\" flag='2' adverSign='0' multiMsgFlag='0'><item layout='2'><title size='38' color='#9900CC' style='1'>%s</title><summary color='#FF0033'>\n👀试图寻找窥屏的群友👀</summary><picture cover=\"服务器API地址/?g=%s-t=%s\" /></item></msg>",
+                    "<?xml version='1.0' encoding='UTF-8' standalone='yes' ?><msg serviceID='1' templateID='1' action='' brief='&#91;窥屏检测&#93;' sourceMsgId='0' url=\"https://www.baidu.com\" flag='2' adverSign='0' multiMsgFlag='0'><item layout='2'><title size='38' color='#9900CC' style='1'>%s</title><summary color='#FF0033'>\n👀试图寻找窥屏的群友👀</summary><picture cover=\"服务器API地址/kp.php?g=%s-t=%s\" /></item></msg>",
                     content[math.random(1, #content)], data.FromGroupId,
                     math.random())
             })
