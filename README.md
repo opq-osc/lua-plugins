@@ -1,3 +1,3 @@
-## 已迁移至：https://github.com/opq-osc/lua-plugins  
+## 适用于OPQBOT的lua插件
 
-自用～，自取～
+所有插件中的 `admin_qq` 建议更改为bot管理员qq
