@@ -7,8 +7,10 @@ local mysql = require("mysql")
 function ReceiveFriendMsg(CurrentQQ, data)
     if data.MsgType ~= "TempSessionMsg" then
         if string.find(data.Content, "来点色图") == 1 then
-            local strJson = setu("http://127.0.0.1:222/setu/?r18=0")
-            -- local img_url = "https://images.weserv.nl/?url=" .. strJson["url"] .."&output=webp"
+            local strJson = setu(1, 0)
+            local img_url =
+                "https://images.weserv.nl/?url=" .. strJson["url"] ..
+                    "&output=webp"
             local img_url = strJson["url"]
             log.notice("the img_url is %s", img_url)
             local str = "标题：" .. strJson["title"] ..
@@ -25,8 +27,10 @@ function ReceiveFriendMsg(CurrentQQ, data)
             })
         end
         if string.find(data.Content, "来点r18色图") == 1 then
-            local strJson = setu("http://127.0.0.1:222/setu/?r18=1")
-            -- local img_url = "https://images.weserv.nl/?url=" .. strJson["url"] .."&output=webp"
+            local strJson = setu(1, 1)
+            local img_url =
+                "https://images.weserv.nl/?url=" .. strJson["url"] ..
+                    "&output=webp"
             local img_url = strJson["url"]
             log.notice("the img_url is %s", img_url)
             local str = "标题：" .. strJson["title"] ..
@@ -44,10 +48,11 @@ function ReceiveFriendMsg(CurrentQQ, data)
         end
     end
     if data.MsgType == "TempSessionMsg" and data.ToUin == tonumber(CurrentQQ) then
-        -- list = Api.GetGroupList(CurrentQQ,{NextToken = ""})
         if string.find(data.Content, "来点色图") == 13 then
-            local strJson = setu("http://127.0.0.1:222/setu/?r18=0")
-            -- local img_url = "https://images.weserv.nl/?url=" .. strJson["url"] .."&output=webp"
+            local strJson = setu(1, 0)
+            local img_url =
+                "https://images.weserv.nl/?url=" .. strJson["url"] ..
+                    "&output=webp"
             local img_url = strJson["url"]
             log.notice("the img_url is %s", img_url)
             local str = "标题：" .. strJson["title"] ..
@@ -65,8 +70,10 @@ function ReceiveFriendMsg(CurrentQQ, data)
             })
         end
         if string.find(data.Content, "来点r18色图") == 13 then
-            local strJson = setu("http://127.0.0.1:222/setu/?r18=1")
-            -- local img_url = "https://images.weserv.nl/?url=" .. strJson["url"] .."&output=webp"
+            local strJson = setu(1, 1)
+            local img_url =
+                "https://images.weserv.nl/?url=" .. strJson["url"] ..
+                    "&output=webp"
             local img_url = strJson["url"]
             log.notice("the img_url is %s", img_url)
             local str = "标题：" .. strJson["title"] ..
@@ -99,25 +106,18 @@ function ReceiveGroupMsg(CurrentQQ, data)
                 string.find(data.Content, "来张色图") == 1 or
                 string.find(data.Content, "来份色图") == 1 then
 
-                local strJson = setu("http://127.0.0.1:222/setu/?r18=0")
-                local img_url = strJson["url"]
-                -- local img_url = strJson["url"]:gsub("i.pixiv.cat","i.pximg.net")
+                local strJson = setu(1, 0)
+                local img_url = "https://images.weserv.nl/?url=" ..
+                                    setu_json["url"] .. "&output=webp"
                 send_pic_to_group(CurrentQQ, data.FromGroupId, "", img_url)
             end
             if string.find(data.Content, "来点r18色图") == 1 or
                 string.find(data.Content, "来张r18色图") == 1 then
-                setu_json = setu("http://127.0.0.1:222/setu/?r18=1")
-                -- local img_url = setu_json["path"]
-                -- local img_url = "https://images.weserv.nl/?url=" .. setu_json["url"] .."&output=webp"
+                setu_json = setu(1, 1)
+                local img_url = "https://images.weserv.nl/?url=" ..
+                                    setu_json["url"] .. "&output=webp"
                 local img_url = setu_json["url"]
                 local str = "30s后销毁该条消息，请快点冲，谢谢"
-                -- local str = "标题：" .. setu_json["title"] ..
-                --                 "\nhttps://www.pixiv.net/artworks/" ..
-                --                 setu_json["pid"] .. "\n作者：" ..
-                --                 setu_json["author"] ..
-                --                 "\nhttps://www.pixiv.net/users/" ..
-                --                 setu_json["uid"] .. "\n原图：" ..
-                --                 setu_json["url"]
 
                 send_pic_to_group(CurrentQQ, data.FromGroupId, str, img_url)
             end
@@ -130,9 +130,7 @@ function ReceiveGroupMsg(CurrentQQ, data)
                 else
                     send_to_group(CurrentQQ, data.FromGroupId,
                                   "正在发送ing[表情178][表情67]")
-                    setu_json = setu(
-                                    "http://127.0.0.1:222/TG_IMG/?type=acg&num=" ..
-                                        num)
+                    setu_json = setu(num, 0)
                     len = #setu_json
                     i = 1
                     while i <= len do
@@ -158,10 +156,24 @@ function ReceiveGroupMsg(CurrentQQ, data)
 end
 function ReceiveEvents(CurrentQQ, data, extData) return 1 end
 
-function setu(url)
-    response, error_message = http.request("GET", url)
-    local html = response.body
-    setu_json = json.decode(html)
+function setu(num, r)
+    local f, _ = io.open('./Plugins/data/setu.json', "r")
+    if r == 1 then
+        f, _ = io.open('./Plugins/data/setu_r18.json', "r")
+    end
+    local content = f:read("*all")
+    f:close()
+    local setu_data = json.decode(content)
+    if num == 1 then
+        math.randomseed(os.time())
+        setu_json = setu_data[math.random(1, #setu_data)]
+    else
+        setu_json = {}
+        for i = 1, num, 1 do
+            math.randomseed(os.time()*i)
+            setu_json[i] = setu_data[math.random(1, #setu_data)]["url"]
+        end
+    end
     return setu_json
 end
 
@@ -175,14 +187,12 @@ function send_to_group(CurrentQQ, toUid, content)
 end
 
 function send_pic_to_group(CurrentQQ, toUid, str, img_url)
-    -- img_url=img_url:gsub("http://127.0.0.1:222/TG_IMG","/var/www/wwwroot/tools/TG_IMG")
     log.notice("the setu_img_url is %s", img_url)
     Api.Api_SendMsgV2(CurrentQQ, {
         ToUserUid = toUid,
         SendToType = 2,
         SendMsgType = "PicMsg",
         Content = str,
-        -- PicPath = img_url,
         PicUrl = img_url
     })
 end
