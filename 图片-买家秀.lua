@@ -6,22 +6,21 @@ local http = require("http")
 function ReceiveFriendMsg(CurrentQQ, data)
     if data.MsgType ~= "TempSessionMsg" then
         if string.find(data.Content, "来点买家秀") == 1 then
-            send_to_friend(CurrentQQ, data,
-                           "http://127.0.0.1:222/meizi/?type=mjx")
+            send_to_friend(CurrentQQ, data, "https://api.vvhan.com/api/tao")
         end
     end
     if data.MsgType == "TempSessionMsg" and data.ToUin == tonumber(CurrentQQ) then
         if string.find(data.Content, "来点买家秀") == 13 then
-            send_to_private(CurrentQQ, data,
-                            "http://127.0.0.1:222/meizi/?type=mjx")
+            send_to_private(CurrentQQ, data, "https://api.vvhan.com/api/tao")
         end
     end
     return 1
 end
 function ReceiveGroupMsg(CurrentQQ, data)
-    if string.find(data.Content, "来点买家秀") == 1 then
+    if string.find(data.Content, "来点买家秀") == 1 or
+        string.find(data.Content, "买家秀") == 1 then
         info = mjx()
-        img_url = "http://127.0.0.1:222/meizi/mjx1/"..info.path
+        img_url = info.pic
         log.notice("url:%s", img_url)
         content = "“" .. info.title .. "”"
         log.notice("comment:%s", content)
@@ -35,9 +34,9 @@ function mjx()
     local type = {'f', 'g', 'h', 'i', 'a', 'b', 'c', 'd', 'e', 'j', 'k', 'l'}
     math.randomseed(tonumber(tostring(os.time()):reverse():sub(1, 7)))
     randomNum = math.random(12)
-    response, error_message = http.request("GET", "http://127.0.0.1:222/meizi/",
-                                           {
-        query = "type=mjx1&c=" .. type[randomNum],
+    response, error_message = http.request("GET",
+                                           "https://api.vvhan.com/api/tao", {
+        query = "type=json&c=" .. type[randomNum],
         headers = {
             ["Accept"] = "*/*",
             ["User-Agent"] = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.163 Safari/537.36"
