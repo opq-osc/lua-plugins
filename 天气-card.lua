@@ -116,7 +116,6 @@ function weather(city)
     f:close()
     local ID_Data = json.decode(content)
     local city_id = ID_Data["m"][city]
-    local city_id = html[1].adcode
     log.notice("city_id-->%s", city_id)
     if city_id then
         response, error_message = http.request("GET",
