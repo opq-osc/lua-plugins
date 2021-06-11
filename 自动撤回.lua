@@ -1,6 +1,21 @@
 local Api = require('coreApi')
 
 function ReceiveGroupMsg(CurrentQQ, data)
+    --禁止长消息刷屏
+    if data.Content:find("%c") then
+        local retTbl = {}
+        for s in string.gmatch(data.Content, "%c") do
+            if retTbl[s] then
+                retTbl[s] = retTbl[s] + 1
+            else
+                retTbl[s] = 1
+            end
+        end
+        if tonumber(retTbl["\n"]) >= 100 then
+            revoke_msg(CurrentQQ, data, 1)
+            return 1
+        end
+    end
     if data.FromUserId == tonumber(CurrentQQ) then
         if data.Content:find('s后销毁') then
             local num = data.Content:match("(%d+)s后销毁.*")
